@@ -2,6 +2,7 @@ from math import radians, cos, sin, asin, sqrt
 import heapq
 
 class Network:
+    """Represents the graph for the Charger network. Each node is a Charger class and the network holds the nodes within a dictionary"""
     def __init__(self) -> None:
         self.chargers = {}
 
@@ -10,7 +11,6 @@ class Network:
         for name, charger in self.chargers.items():
             print(name + " " +  str(charger.edges))
 
-
     def print_charger(self,charger_name):
         """Takes in a charger name and prints out the chargers edges if it exists"""
         if charger_name not in self.chargers:
@@ -18,15 +18,12 @@ class Network:
         else:
             print(charger_name + " " + str(self.chargers[charger_name].edges))
 
-    
     def get_charger_by_id(self, id):
         """Getter method for retrieving a Charger in the network with a provided id"""
         for charger in self.chargers.values():
             if charger.id == id:
                 return charger
 
-        
-    
     def build_network(self, csv_frame, col_names):
         """Takes in a dataframe and a list of column names and creates a Charger class and adds it to the network's dictionay of chargers"""
         charger_count = 0
@@ -141,17 +138,14 @@ class Network:
         prev = starting_charger
 
         while path_stack:
-
             curr = path_stack.pop()
 
             if curr == starting_charger or curr == ending_charger:
                 print(curr)
                 continue
 
-
             charging_time, distance_traveled = self.calculate_charging_time(prev,curr)
             
-
             print(f'{curr} - {distance_traveled} Miles Traveled - {charging_time} Minutes of Charging Time')
             prev = curr
 
@@ -171,32 +165,6 @@ class Network:
 
 
         
-        
-
-
-
-                
-
-
-            
-
-
-                            
-
-
-
-
-
-
-            
-
-           
-            
-            
-            
-    
-
-
 class Charger:
     """An individual Charger in the Network. Represents a node within the graph"""
     def __init__(self,id,lat,lon,name) -> None:
@@ -233,8 +201,6 @@ class Charger:
     def edges(self):
         return self._edges
 
-
-    
     def print_edges(self):
         print(self.edges)
 
