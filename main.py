@@ -2,8 +2,6 @@ import pandas as pd
 import network
 import sys
 
-print(sys.argv)
-
 car_range = 198
 
 # Get charger list from CSV file and add labels within pandas df
