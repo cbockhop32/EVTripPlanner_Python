@@ -4,26 +4,25 @@
 ## Background
 
 This program will take a CSV file that has names and locations (by GPS coordinates: latitude and longitude) and parse the CSV file to create a network of chargers.
-Then the user the input two names of chargers within the network/CSV file and the program will return the shortest route between those two points, giving you
-the necessary charger stops and charging times at each charger on your way to the destination.
+Then the user will choose two names of chargers within the network/CSV file and the program will return the shortest route between those two points, giving you the necessary charger stops and charging times at each charger on your way to the destination.
 
 The program assumes that your hypothetical electric car has a fixed range and the path route will be depended on the vehichle's range
+
+Currently, the vehicle range that it is using is 300 miles of range. 
 
 
 ## Running the program 
 
 python main.py 
 
+This will bring up the GUI. You can click on different starting and ending Chargers and it will calculate the distance between those two locations.
+
 ![alt text](imgs/screenshot1.png)
 
 
-Output:
+Once you have decided on your starting and ending Chargers, click the 'Generate Path' button to the right and it will output the shortest path and all the required charging stops along the way. It will also tell you how far you need to travel to get to each stop as well as the estimated charging time.
 
-Hawthorne_CA
-Inyokern_CA - 122.7 Miles Traveled - 14.8 Minutes of Charging Time
-Las_Vegas_NV - 153.8 Miles Traveled - 18.5 Minutes of Charging Time
-St._George_UT - 107.9 Miles Traveled - 13.0 Minutes of Charging Time
-Richfield_UT - 141.3 Miles Traveled - 17.0 Minutes of Charging Time
-South_Salt_Lake_City_UT - 133.8 Miles Traveled - 16.1 Minutes of Charging Time
-Idaho_Falls_ID - 191.1 Miles Traveled - 23.0 Minutes of Charging Time
-Bozeman_MT
+![alt text](imgs/screenshot2.png)
+
+
+
