@@ -23,6 +23,13 @@ class Network:
         for charger in self.chargers.values():
             if charger.id == id:
                 return charger
+            
+    def get_gps_coords_by_name(self, name_1, name_2):
+        """Used in the GUI, takes in the name of 2 chargers and gets the GPS coords that are stored within self.chargers dictionary"""
+        lat1,lon1 = self.chargers[name_1].lat, self.chargers[name_1].lon
+        lat2, lon2 = self.chargers[name_2].lat, self.chargers[name_2].lon
+
+        return (lat1, lon1, lat2, lon2)
 
     def build_network(self, csv_frame, col_names):
         """Takes in a dataframe and a list of column names and creates a Charger class and adds it to the network's dictionay of chargers"""
@@ -129,25 +136,41 @@ class Network:
                     # Adding the starting charger for printing purposes later
                     final_path.append(start)
 
-                    self.print_shortest_path(start,end, final_path) 
-                    return
+                    return self.print_shortest_path(start,end, final_path) 
+                
+
+    def format_name_gui(self, name):
+        """Formats charger name to be displayed on the GUI"""
+        return name[:-3].replace('_',' ') + ', ' + name[-2:]
                 
 
     def print_shortest_path(self, starting_charger, ending_charger, path_stack):
         """Takes the stack that is returned fromt he calculate_shortest_path method and then prints out the path and the charging times at each Charger"""
         prev = starting_charger
-
+        result = ""
+        count = 1
         while path_stack:
             curr = path_stack.pop()
 
             if curr == starting_charger or curr == ending_charger:
-                print(curr)
+                if curr == starting_charger:
+                    result += f'Start - {self.format_name_gui(curr)}'
+                    result += "\n\n Charging Stops:\n"
+                elif curr == ending_charger:
+                    result += "\n"
+                    result += f'End - {self.format_name_gui(curr)}'
+
+
                 continue
 
             charging_time, distance_traveled = self.calculate_charging_time(prev,curr)
             
-            print(f'{curr} - {distance_traveled} Miles Traveled - {charging_time} Minutes of Charging Time')
+            result += f'{count}) {self.format_name_gui(curr)} \n     {int(distance_traveled)} miles Traveled \n     {charging_time} min. of Charging'
+            result += "\n"
+            count +=1
             prev = curr
+
+        return result
 
 
     def calculate_charging_time(self, charger_1_name, charger_2_name):
@@ -185,18 +208,12 @@ class Charger:
     def lat(self):
         return self._lat
     
-    @lat.setter
-    def lat(self,val):
-        self._lat = val
-    
+
     @property
     def lon(self):
         return self._lon
     
-    @lon.setter
-    def lon(self, val):
-        self._lon = val
-    
+
     @property
     def edges(self):
         return self._edges
