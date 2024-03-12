@@ -13,9 +13,19 @@ Currently, the vehicle range that it is using is 300 miles of range.
 
 ## Running the program 
 
+### Create virtual environment
+python3 -m venv .venv
+
+### Activate virtual environment
+. venv/bin/activate
+
+### Install packages using pip
+pip install -r requirements.txt
+
+### Run main.py
 python main.py 
 
-This will bring up the GUI. You can click on different starting and ending Chargers and it will calculate the distance between those two locations.
+Once you run main.py it will bring up the GUI. You can click on different starting and ending Chargers and it will calculate the distance between those two locations.
 
 ![alt text](imgs/screenshot1.png)
 
