@@ -12,11 +12,10 @@ The program assumes that your hypothetical electric car has a fixed range and th
 
 ## Running the program 
 
-python main.py [name of csv file].csv [Charger Name 1] [Charger Name 2]
+python main.py 
 
-Example:  
+![alt text](imgs/screenshot1.png)
 
-./solution network.csv Hawthorne_CA Bozeman_MT
 
 Output:
 
