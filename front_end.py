@@ -2,10 +2,10 @@ from PySide6 import QtCore, QtWidgets, QtGui
 
 
 class MyWidget(QtWidgets.QWidget):
-    def __init__(self,cities, calc_gps_func, get_charger_gps, calc_shortest_path) -> None:
+    def __init__(self,cities, calc_gps_func, get_charger_gps, calc_shortest_path, rebuild_charger_network, car_range) -> None:
         super().__init__()
-
-        self.layout = QtWidgets.QVBoxLayout(self)
+        self.vehicle_range = car_range
+        self.layout = QtWidgets.QGridLayout(self)
         self.charger_list = sorted(city[:-3].replace('_',' ') + ', ' + city[-2:] for city in cities)
         self.starting_charger = "Select Starting Charger"
         self.ending_charger = "Select Destination Charger"
@@ -13,32 +13,53 @@ class MyWidget(QtWidgets.QWidget):
 
         self.setWindowTitle('EV Trip Planner')
 
+
+        def range_edit_clicked(s):
+            dlg = RangeUpdate(self.vehicle_range)
+
+            if dlg.exec():
+                # print('success')
+                self.vehicle_range = dlg.range_val
+                range_label.setText(f'{self.vehicle_range} mi. range')
+                rebuild_charger_network(self.vehicle_range)
+                # print(self.vehicle_range)
+            else:
+                print('Vehicle Range Not Updated')
+
+        # Range Edit button and label
+        range_button = QtWidgets.QPushButton("Update Range")
+        range_label = QtWidgets.QLabel(f'{self.vehicle_range} mi. range')
+        range_button.clicked.connect(range_edit_clicked)
+        range_widget = QtWidgets.QWidget()
+
+        range_edit_layout = QtWidgets.QVBoxLayout()
+        range_edit_layout.addWidget(range_label)
+        range_edit_layout.addWidget(range_button)
+
+
+        range_widget.setLayout(range_edit_layout)
+
+
         #----------Header Widget and Layout --------------#
         header_widget = QtWidgets.QWidget()
         start_label = QtWidgets.QLabel()
         end_label = QtWidgets.QLabel()
         distance_label = QtWidgets.QLabel()
 
-
-        header_layout = QtWidgets.QHBoxLayout()
-        header_layout.addWidget(start_label)
-        header_layout.addWidget(end_label)
-        header_layout.addWidget(distance_label)
-      
-
-        header_widget.setLayout(header_layout)
         #--------------------------------------------------#
+
 
 
         #--------Main Content Widget and Layout ----------#
         main_content_widget = QtWidgets.QWidget()
-        results_widget = QtWidgets.QTextBrowser()
         main_content_layout = QtWidgets.QHBoxLayout()
 
 
         # Two city seletors and adding the list of cities to each of them
         start_selector = QtWidgets.QListWidget()
         end_selector = QtWidgets.QListWidget()
+        results_widget = QtWidgets.QTextBrowser()
+
         gen_button = QtWidgets.QPushButton("Generate Path")
 
         start_selector.addItem("Select Starting Charger")
@@ -51,13 +72,6 @@ class MyWidget(QtWidgets.QWidget):
         end_selector.setCurrentRow(0)
 
 
-        main_content_layout.addWidget(start_selector)
-        main_content_layout.addWidget(end_selector)
-        main_content_layout.addWidget(results_widget)
-        main_content_layout.addWidget(gen_button)
-        main_content_widget.setLayout(main_content_layout)
-
-     
         #----------------------------------------------#
 
         def format_name_network(name):
@@ -102,30 +116,60 @@ class MyWidget(QtWidgets.QWidget):
         start_selector.itemClicked.connect(start_selection)
         end_selector.itemClicked.connect(end_selection)
         gen_button.clicked.connect(calculate_shortest_path)
-               
+
+
+        # int,ok =    QtWidgets.QInputDialog().getInt(self,"Input Range", "Vehicle Range", QtWidgets.QLineEdit.Normal, QtCore.QDir().home().dirName())
             
         # Adding header widget and main content widet to the the parent layout
-        self.layout.addWidget(header_widget)
-        self.layout.addWidget(main_content_widget)
+        self.layout.addWidget(start_label,0,0)
+        self.layout.addWidget(end_label,0,1)
+        self.layout.addWidget(distance_label,0,2)
+        self.layout.addWidget(range_widget,0,3)
+        self.layout.addWidget(start_selector,1,0)
+        self.layout.addWidget(end_selector,1,1)
+        self.layout.addWidget(results_widget,1,2)
+        self.layout.addWidget(gen_button,1,3)
 
-
-
-
-
-
-        
-
-    # @QtCore.Slot()
-    # def generate_path(self,start,end):
-    #     if (start != "Select Starting Charger" and end != "Select Destination Charger") and (start != end):
-             
-    #     else:
-    #          pass
-        
+        self.setLayout(self.layout)
 
 
   
+class RangeUpdate(QtWidgets.QDialog):
+    def __init__(self, init_range):
+        super().__init__()
+        self.range_val = init_range
+        self.setWindowTitle("Update Range")
+        
 
+        Qbtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+
+        self.buttonBox = QtWidgets.QDialogButtonBox(Qbtn)
+        self.buttonBox.accepted.connect(self.update_val)
+        self.buttonBox.rejected.connect(self.reject)
+
+        self.layout = QtWidgets.QVBoxLayout()
+        message = QtWidgets.QLabel("Input new vehicle range:")
+
+        self.range_input = QtWidgets.QInputDialog()
+        self.range_input.setOption(QtWidgets.QInputDialog.NoButtons)
+        self.range_input.setInputMode(QtWidgets.QInputDialog.IntInput)
+        self.range_input.setIntRange(50,1000)
+        self.range_input.setIntValue(self.range_val)
+
+        intEditLine = self.range_input.findChild(QtWidgets.QLineEdit)
+        intEditLine.setPlaceholderText(str(self.range_val))
+
+
+
+        self.layout.addWidget(message)
+        self.layout.addWidget(self.range_input)
+
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
+
+    def update_val(self):
+        self.range_val = self.range_input.intValue()
+        self.accept()
 
 
 

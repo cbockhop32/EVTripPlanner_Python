@@ -5,6 +5,7 @@ class Network:
     """Represents the graph for the Charger network. Each node is a Charger class and the network holds the nodes within a dictionary"""
     def __init__(self) -> None:
         self.chargers = {}
+        self.charger_csv_info = ()
 
     def print_network(self):
         """Helper function that prints out all the chargers in the networks and their edges to other nearby chargers"""
@@ -31,9 +32,12 @@ class Network:
 
         return (lat1, lon1, lat2, lon2)
 
-    def build_network(self, csv_frame, col_names):
+    def build_network(self):
         """Takes in a dataframe and a list of column names and creates a Charger class and adds it to the network's dictionay of chargers"""
         charger_count = 0
+
+        csv_frame, col_names = self.charger_csv_info[0], self.charger_csv_info[1]
+        
 
         for index,row in csv_frame.iterrows():
             name,latitude,longitude = row[col_names[0]], row[col_names[1]], row[col_names[2]]
@@ -43,7 +47,15 @@ class Network:
                 charger_count += 1
    
         print(charger_count, "chargers were added to the network")
-        
+
+
+    def rebuild_network(self, updated_car_range):
+        """This is called in the front-end when the user updates the vehicles range within the GUI."""        
+        self.chargers = {}
+        self.build_network()
+        self.add_edges_to_network(updated_car_range)
+
+
     def add_edges_to_network(self, max_car_range):
         """Loops through all the chargers that have been added to the network and connects them if the chargers are within the vehicles max range that is passed in"""
 
@@ -53,8 +65,8 @@ class Network:
                     if name1 != name2:
                         dist = round(self.calc_gps_distance(charger1.lat, charger1.lon, charger2.lat,charger2.lon),1)
 
-                        # If the distance between the two Chargers is within half of max car range the maximum range of the car, then we make an edge between those two Chargers
-                        if dist < max_car_range and dist > (max_car_range*.5): 
+                        # If the distance between the two Chargers is within 50mi maximum range of the car, then we make an edge between those two Chargers
+                        if dist < max_car_range and dist > 50: 
                             charger1.edges.append((dist,charger2.name))
                             charger2.edges.append((dist,charger1.name))
 
